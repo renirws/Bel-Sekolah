@@ -7,15 +7,19 @@ interface SubjectBellSettingsProps {
   onSelectBellType: (type: string) => void;
   customSubjectText: string;
   onCustomSubjectTextChange: (text: string) => void;
+  bellSequence: string;
+  onSelectBellSequence: (seq: string) => void;
 }
 
-const DEFAULT_SPEECH_TEXT = "Assalamu'alaikum wr wb dan semangat pagi siswa/ siswi dan bapak ibu guru hebat smk tanjung priok 1. mari memulai kegiatan belajar & mengajar dengan penuh semagat kreativitas dan kolaborasi hebat";
+const DEFAULT_SPEECH_TEXT = "Assalamu'alaikum warahmatullahi wabarakatuh. semangat pagi siswa/ siswi dan bapak ibu guru hebat smk tanjung priok 1. mari memulai kegiatan belajar & mengajar dengan penuh semangat kreativitas , kolaborasi hebat";
 
 export default function SubjectBellSettings({
   subjectBellType,
   onSelectBellType,
   customSubjectText,
   onCustomSubjectTextChange,
+  bellSequence,
+  onSelectBellSequence,
 }: SubjectBellSettingsProps) {
   const [isSpeaking, setIsSpeaking] = useState(false);
 
@@ -205,6 +209,45 @@ export default function SubjectBellSettings({
             {`{kegiatan}`}
           </div>
           <span className="text-[9px] text-slate-400 select-none">Nama Kegiatan</span>
+        </div>
+
+        {/* Playback Sequence Toggle */}
+        <div className="mt-4 pt-3.5 border-t border-slate-100" id="sequence-setting-row">
+          <span className="text-[10px] font-bold text-slate-500 select-none uppercase tracking-wider block mb-2">
+            Urutan Bunyi Bel Jam Pelajaran
+          </span>
+          <div className="grid grid-cols-2 gap-2" id="sequence-toggle-group">
+            <button
+              type="button"
+              onClick={() => onSelectBellSequence('speech_first')}
+              className={`p-2 rounded-xl border text-xxs font-bold transition-all text-center flex flex-col items-center justify-center gap-0.5 cursor-pointer active:scale-95 ${
+                bellSequence === 'speech_first'
+                  ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm'
+                  : 'bg-slate-50 hover:bg-slate-100 text-slate-600 border-slate-200'
+              }`}
+              id="btn-seq-speech-first"
+            >
+              <span>Teks Ucapan Dulu</span>
+              <span className={`text-[9px] font-medium opacity-80 ${bellSequence === 'speech_first' ? 'text-indigo-100' : 'text-slate-400'}`}>
+                Lalu Nada/Musik
+              </span>
+            </button>
+            <button
+              type="button"
+              onClick={() => onSelectBellSequence('chime_first')}
+              className={`p-2 rounded-xl border text-xxs font-bold transition-all text-center flex flex-col items-center justify-center gap-0.5 cursor-pointer active:scale-95 ${
+                bellSequence === 'chime_first'
+                  ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm'
+                  : 'bg-slate-50 hover:bg-slate-100 text-slate-600 border-slate-200'
+              }`}
+              id="btn-seq-chime-first"
+            >
+              <span>Nada/Musik Dulu</span>
+              <span className={`text-[9px] font-medium opacity-80 ${bellSequence === 'chime_first' ? 'text-indigo-100' : 'text-slate-400'}`}>
+                Lalu Teks Ucapan
+              </span>
+            </button>
+          </div>
         </div>
       </div>
 

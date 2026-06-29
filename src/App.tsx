@@ -145,12 +145,21 @@ export default function App() {
   // Custom Subject Speech Text State
   const [customSubjectText, setCustomSubjectText] = useState<string>(() => {
     return localStorage.getItem('school_bell_custom_subject_text') || 
-      "Assalamu'alaikum wr wb dan semangat pagi siswa/ siswi dan bapak ibu guru hebat smk tanjung priok 1. mari memulai kegiatan belajar & mengajar dengan penuh semagat kreativitas dan kolaborasi hebat";
+      "Assalamu'alaikum warahmatullahi wabarakatuh. semangat pagi siswa/ siswi dan bapak ibu guru hebat smk tanjung priok 1. mari memulai kegiatan belajar & mengajar dengan penuh semangat kreativitas , kolaborasi hebat";
   });
 
   useEffect(() => {
     localStorage.setItem('school_bell_custom_subject_text', customSubjectText);
   }, [customSubjectText]);
+
+  // Bell playback order sequence ('speech_first' or 'chime_first')
+  const [bellSequence, setBellSequence] = useState<string>(() => {
+    return localStorage.getItem('school_bell_sequence') || 'speech_first';
+  });
+
+  useEffect(() => {
+    localStorage.setItem('school_bell_sequence', bellSequence);
+  }, [bellSequence]);
 
   // Trigger Logs
   const [logs, setLogs] = useState<BellLog[]>(() => {
@@ -292,13 +301,23 @@ export default function App() {
             await playTheme();
             await audioSystem.playSiren(5);
           } else if (matched.bellType === 'speech') {
-            await playTheme();
             const announce = generateAnnouncementText(matched.activity, customSubjectText);
-            await audioSystem.speak(announce);
+            if (bellSequence === 'speech_first') {
+              await audioSystem.speak(announce);
+              await playTheme();
+            } else {
+              await playTheme();
+              await audioSystem.speak(announce);
+            }
           } else if (matched.bellType === 'both') {
-            await playTheme();
             const announce = generateAnnouncementText(matched.activity, customSubjectText);
-            await audioSystem.speak(announce);
+            if (bellSequence === 'speech_first') {
+              await audioSystem.speak(announce);
+              await playTheme();
+            } else {
+              await playTheme();
+              await audioSystem.speak(announce);
+            }
           }
 
           // Build log entry
@@ -531,6 +550,8 @@ export default function App() {
               onSelectBellType={setSubjectBellType}
               customSubjectText={customSubjectText}
               onCustomSubjectTextChange={setCustomSubjectText}
+              bellSequence={bellSequence}
+              onSelectBellSequence={setBellSequence}
             />
           </div>
         </div>
