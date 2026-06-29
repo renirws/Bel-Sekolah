@@ -65,9 +65,26 @@ export function parseScheduleText(text: string): ScheduleItem[] {
 /**
  * Converts a schedule item into a highly polite Indonesian sentence for TTS.
  */
-export function generateAnnouncementText(activity: string): string {
+export function generateAnnouncementText(activity: string, customSubjectText?: string): string {
   const lowercaseAct = activity.toLowerCase();
   let text = '';
+  
+  const isSubjectHour = lowercaseAct.includes('pelajaran ke-') || 
+                        lowercaseAct.includes('pelajaran ke ') || 
+                        lowercaseAct.includes('jam pelajaran ke') || 
+                        lowercaseAct.includes('pelajaran pertama') || 
+                        lowercaseAct.includes('jam pertama');
+
+  if (isSubjectHour && customSubjectText) {
+    const numMatch = activity.match(/\d+/);
+    const jamNum = numMatch ? numMatch[0] : 'pertama';
+    
+    text = customSubjectText
+      .replace(/{kegiatan}/gi, activity)
+      .replace(/{jam}/gi, jamNum);
+      
+    return text;
+  }
   
   if (lowercaseAct.includes('kepala sekolah') || lowercaseAct.includes('piket')) {
     text = `Perhatian, mohon perhatian, ${activity}.`;

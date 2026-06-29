@@ -11,6 +11,7 @@ import ManualTriggers from './components/ManualTriggers';
 import ScheduleParser from './components/ScheduleParser';
 import LogViewer from './components/LogViewer';
 import TimeSimulator from './components/TimeSimulator';
+import SubjectBellSettings from './components/SubjectBellSettings';
 
 // Default mock profiles so app works immediately
 const DEFAULT_PROFILES: ScheduleProfile[] = [
@@ -132,6 +133,25 @@ export default function App() {
     return saved !== null ? saved === 'true' : true;
   });
 
+  // Subject Bell Type State
+  const [subjectBellType, setSubjectBellType] = useState<string>(() => {
+    return localStorage.getItem('school_bell_subject_type') || 'upbeat';
+  });
+
+  useEffect(() => {
+    localStorage.setItem('school_bell_subject_type', subjectBellType);
+  }, [subjectBellType]);
+
+  // Custom Subject Speech Text State
+  const [customSubjectText, setCustomSubjectText] = useState<string>(() => {
+    return localStorage.getItem('school_bell_custom_subject_text') || 
+      "Assalamu'alaikum wr wb dan semangat pagi siswa/ siswi dan bapak ibu guru hebat smk tanjung priok 1. mari memulai kegiatan belajar & mengajar dengan penuh semagat kreativitas dan kolaborasi hebat";
+  });
+
+  useEffect(() => {
+    localStorage.setItem('school_bell_custom_subject_text', customSubjectText);
+  }, [customSubjectText]);
+
   // Trigger Logs
   const [logs, setLogs] = useState<BellLog[]>(() => {
     const saved = localStorage.getItem('school_bell_logs');
@@ -250,9 +270,19 @@ export default function App() {
                 setPlayingBell(prev => prev ? { ...prev, secondsRemaining: sec } : null);
               });
             } else {
-              await audioSystem.playUpbeatMusic(duration, (sec) => {
-                setPlayingBell(prev => prev ? { ...prev, secondsRemaining: sec } : null);
-              });
+              if (subjectBellType === 'westminster') {
+                await audioSystem.playWestminster();
+              } else if (subjectBellType === 'dingdong') {
+                await audioSystem.playDingDong();
+              } else if (subjectBellType === 'beeps') {
+                await audioSystem.playElectronicBeeps(4);
+              } else if (subjectBellType === 'siren') {
+                await audioSystem.playSiren(5);
+              } else {
+                await audioSystem.playUpbeatMusic(duration, (sec) => {
+                  setPlayingBell(prev => prev ? { ...prev, secondsRemaining: sec } : null);
+                });
+              }
             }
           };
 
@@ -263,11 +293,11 @@ export default function App() {
             await audioSystem.playSiren(5);
           } else if (matched.bellType === 'speech') {
             await playTheme();
-            const announce = generateAnnouncementText(matched.activity);
+            const announce = generateAnnouncementText(matched.activity, customSubjectText);
             await audioSystem.speak(announce);
           } else if (matched.bellType === 'both') {
             await playTheme();
-            const announce = generateAnnouncementText(matched.activity);
+            const announce = generateAnnouncementText(matched.activity, customSubjectText);
             await audioSystem.speak(announce);
           }
 
@@ -285,7 +315,7 @@ export default function App() {
             triggerType: 'Otomatis',
             bellType: matched.bellType === 'both' ? 'Chime & TTS' : matched.bellType.toUpperCase(),
             speechTextUsed: matched.bellType === 'speech' || matched.bellType === 'both'
-              ? generateAnnouncementText(matched.activity)
+              ? generateAnnouncementText(matched.activity, customSubjectText)
               : undefined,
           };
 
@@ -374,9 +404,19 @@ export default function App() {
           setPlayingBell(prev => prev ? { ...prev, secondsRemaining: sec } : null);
         });
       } else {
-        await audioSystem.playUpbeatMusic(durationSeconds, (sec) => {
-          setPlayingBell(prev => prev ? { ...prev, secondsRemaining: sec } : null);
-        });
+        if (subjectBellType === 'westminster') {
+          await audioSystem.playWestminster();
+        } else if (subjectBellType === 'dingdong') {
+          await audioSystem.playDingDong();
+        } else if (subjectBellType === 'beeps') {
+          await audioSystem.playElectronicBeeps(4);
+        } else if (subjectBellType === 'siren') {
+          await audioSystem.playSiren(5);
+        } else {
+          await audioSystem.playUpbeatMusic(durationSeconds, (sec) => {
+            setPlayingBell(prev => prev ? { ...prev, secondsRemaining: sec } : null);
+          });
+        }
       }
     } catch (err) {
       console.error(err);
@@ -478,13 +518,19 @@ export default function App() {
               onStopAll={handleStopAll}
             />
           </div>
-          <div className="md:col-span-5" id="section-simulation-panel">
+          <div className="md:col-span-5 flex flex-col gap-6" id="section-simulation-panel">
             <TimeSimulator
               simulationEnabled={simulationEnabled}
               onToggleSimulation={setSimulationEnabled}
               simulatedTime={simulatedTime}
               onSetSimulatedTime={setSimulatedTime}
               activeProfile={activeProfile}
+            />
+            <SubjectBellSettings
+              subjectBellType={subjectBellType}
+              onSelectBellType={setSubjectBellType}
+              customSubjectText={customSubjectText}
+              onCustomSubjectTextChange={setCustomSubjectText}
             />
           </div>
         </div>
