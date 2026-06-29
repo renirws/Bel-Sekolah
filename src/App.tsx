@@ -233,11 +233,16 @@ export default function App() {
 
           const lowercaseActivity = matched.activity.toLowerCase();
           const isMasuk = lowercaseActivity.includes('masuk') || lowercaseActivity.includes('gerbang') || lowercaseActivity.includes('pertama') || lowercaseActivity.includes('ke-1') || lowercaseActivity.includes('ke 1');
+          const isIstirahat = lowercaseActivity.includes('istirahat') || lowercaseActivity.includes('break');
           const isPulang = lowercaseActivity.includes('pulang') || lowercaseActivity.includes('selesai kbm') || lowercaseActivity.includes('kbm selesai') || lowercaseActivity.includes('selesai belajar');
 
           const playTheme = async () => {
             if (isMasuk) {
               await audioSystem.playCustomAudio(CUSTOM_BELLS.MASUK, duration, (sec) => {
+                setPlayingBell(prev => prev ? { ...prev, secondsRemaining: sec } : null);
+              });
+            } else if (isIstirahat) {
+              await audioSystem.playCustomAudio(CUSTOM_BELLS.ISTIRAHAT, duration, (sec) => {
                 setPlayingBell(prev => prev ? { ...prev, secondsRemaining: sec } : null);
               });
             } else if (isPulang) {
@@ -358,6 +363,10 @@ export default function App() {
       const lower = activity.toLowerCase();
       if (lower.includes('masuk')) {
         await audioSystem.playCustomAudio(CUSTOM_BELLS.MASUK, durationSeconds, (sec) => {
+          setPlayingBell(prev => prev ? { ...prev, secondsRemaining: sec } : null);
+        });
+      } else if (lower.includes('istirahat')) {
+        await audioSystem.playCustomAudio(CUSTOM_BELLS.ISTIRAHAT, durationSeconds, (sec) => {
           setPlayingBell(prev => prev ? { ...prev, secondsRemaining: sec } : null);
         });
       } else if (lower.includes('pulang')) {

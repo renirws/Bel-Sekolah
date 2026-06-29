@@ -169,18 +169,18 @@ export default function ManualTriggers({ onAddLog, playingBell, onPlayUpbeatMusi
             type="button"
             onClick={() => {
               if (onPlayUpbeatMusic) {
-                onPlayUpbeatMusic('Bel Istirahat KBM (Musik Penyemangat)', 120);
-                onAddLog('Bel Istirahat KBM Manual', 'Musik (2 Menit)');
+                onPlayUpbeatMusic('Bel Istirahat KBM (Lagu Utama)', 120);
+                onAddLog('Bel Istirahat Manual', 'Lagu Utama (2 Menit)');
               } else {
-                handleTrigger('upbeat-2min', () => audioSystem.playUpbeatMusic(120), 'Bel Istirahat KBM (Musik 2 Menit)');
+                handleTrigger('upbeat-2min', () => audioSystem.playCustomAudio(CUSTOM_BELLS.ISTIRAHAT, 120), 'Bel Istirahat KBM (Lagu Utama)');
               }
             }}
             disabled={isPlaying !== null || !!playingBell}
-            className="p-3 bg-white hover:bg-indigo-50/50 border border-indigo-100 text-left rounded-xl transition-all active:scale-95 disabled:opacity-60 cursor-pointer flex flex-col justify-between group h-20 shadow-sm"
+            className="p-3 bg-white hover:bg-amber-50/50 border border-amber-100 text-left rounded-xl transition-all active:scale-95 disabled:opacity-60 cursor-pointer flex flex-col justify-between group h-20 shadow-sm"
             id="btn-upbeat-2min"
           >
-            <span className="text-xxs font-bold text-indigo-500 block uppercase">2 Menit</span>
-            <span className="text-xs font-extrabold text-slate-700 leading-tight block mt-1 group-hover:text-indigo-700">Istirahat Sekolah</span>
+            <span className="text-xxs font-bold text-amber-500 block uppercase">2 Menit</span>
+            <span className="text-xs font-extrabold text-slate-700 leading-tight block mt-1 group-hover:text-amber-700">Bel Istirahat (Lagu)</span>
           </button>
         </div>
       </div>

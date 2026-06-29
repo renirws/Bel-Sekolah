@@ -497,7 +497,8 @@ class SchoolAudioSystem {
 
 export const CUSTOM_BELLS = {
   MASUK: 'https://docs.google.com/uc?export=download&id=1hY6jbG9xZ-QFoPmpUVfoWxvuSzzD13IZ',
-  PULANG: 'https://docs.google.com/uc?export=download&id=1uwkEr0sVfXSlelBdO-ul75byMbrecWqD'
+  PULANG: 'https://docs.google.com/uc?export=download&id=1uwkEr0sVfXSlelBdO-ul75byMbrecWqD',
+  ISTIRAHAT: 'https://docs.google.com/uc?export=download&id=1et-fARJB4wTMEv6NWg6gAcuV77G3iLg0'
 };
 
 export const audioSystem = new SchoolAudioSystem();
