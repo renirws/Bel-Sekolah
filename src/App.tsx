@@ -12,6 +12,7 @@ import ScheduleParser from './components/ScheduleParser';
 import LogViewer from './components/LogViewer';
 import TimeSimulator from './components/TimeSimulator';
 import SubjectBellSettings from './components/SubjectBellSettings';
+import DesktopInstallerCenter from './components/DesktopInstallerCenter';
 
 // Default mock profiles so app works immediately
 const DEFAULT_PROFILES: ScheduleProfile[] = [
@@ -624,6 +625,11 @@ export default function App() {
             onSaveProfile={handleSaveProfile}
             onCreateProfile={handleCreateProfile}
           />
+        </div>
+
+        {/* DESKTOP APP INSTALLER & OFFLINE PORTABLE PC LAUNCHER CENTER */}
+        <div id="section-desktop-installer">
+          <DesktopInstallerCenter />
         </div>
 
         {/* 4. SEKTOR BAWAH: AUDIT LOGS & PHYSICAL AMPLIFIER INTEGRATION MANUAL */}
