@@ -1,0 +1,8 @@
+{
+  "name": "Bel Sekolah Otomatis & Bel KBM Pintar",
+  "description": "Aplikasi bel sekolah otomatis pintar stand-alone dengan suara pengumuman Text-To-Speech (TTS) Bahasa Indonesia, simulasi bel KBM, dan ekspor-impor jadwal harian.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
