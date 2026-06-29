@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Download, Laptop, FileText, Settings, ShieldCheck, CheckCircle2, Copy, Sparkles, Terminal } from 'lucide-react';
+import { Download, Laptop, FileText, Settings, ShieldCheck, CheckCircle2, Copy, Sparkles, Terminal, Cpu } from 'lucide-react';
 
 export default function DesktopInstallerCenter() {
   const [downloadedBat, setDownloadedBat] = useState(false);
+  const [downloadedPs1, setDownloadedPs1] = useState(false);
   const [downloadedTxt, setDownloadedTxt] = useState(false);
   const [copiedPath, setCopiedPath] = useState(false);
 
@@ -53,6 +54,100 @@ exit
     setTimeout(() => setDownloadedBat(false), 3000);
   };
 
+  // Function to download the .ps1 compiler to compile native .exe
+  const downloadPs1Compiler = () => {
+    const ps1Content = `# =====================================================================
+#  KOMPILER NATIVE .EXE UNTUK APLIKASI BEL SEKOLAH SMK TANJUNG PRIOK 1 HEBAT
+# =====================================================================
+# Script ini secara otomatis mengompilasi kode program C# menggunakan .NET
+# bawaan Windows (csc.exe) menjadi file aplikasi executable (*.exe) resmi.
+# 
+# CARA MENJALANKAN:
+# 1. Klik kanan file ini ("Buat_Bel_Sekolah_EXE.ps1")
+# 2. Pilih "Run with PowerShell" (Jalankan dengan PowerShell)
+# 3. Tunggu 1 detik, file "Bel_Sekolah_Tanjung_Priok_1.exe" akan langsung terbuat!
+# =====================================================================
+
+Write-Host "=====================================================================" -ForegroundColor Cyan
+Write-Host " MEMULAI KOMPILASI NATIVE .EXE - BEL SEKOLAH SMK TANJUNG PRIOK 1 HEBAT" -ForegroundColor Green
+Write-Host "=====================================================================" -ForegroundColor Cyan
+Write-Host ""
+
+$currentUrl = "${currentUrl}"
+
+# Source Code C# untuk meluncurkan jendela web aplikasi stand-alone tanpa terminal CMD
+$csharpCode = @"
+using System;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
+
+public class Program {
+    public static void Main() {
+        ProcessStartInfo startInfo = new ProcessStartInfo();
+        // Mencari Microsoft Edge atau Google Chrome untuk meluncurkan mode aplikasi mandiri
+        startInfo.FileName = "msedge.exe";
+        startInfo.Arguments = "--app=$currentUrl --start-maximized";
+        startInfo.UseShellExecute = true;
+
+        try {
+            Process.Start(startInfo);
+        } catch {
+            try {
+                startInfo.FileName = "chrome.exe";
+                Process.Start(startInfo);
+            } catch {
+                // Fallback membuka default browser
+                Process.Start("$currentUrl");
+            }
+        }
+    }
+}
+"@
+
+$exeName = "Bel_Sekolah_Tanjung_Priok_1.exe"
+
+Write-Host "[INFO] Membaca compiler .NET bawaan Windows..." -ForegroundColor Yellow
+Write-Host "[INFO] Sedang menyusun source code C# ke mesin biner Windows..." -ForegroundColor Yellow
+
+try {
+    # Melakukan kompilasi secara langsung menggunakan utilitas .NET Framework
+    Add-Type -TypeDefinition $csharpCode -OutputAssembly $exeName -OutputType WindowsApplication -ReferencedAssemblies "System.dll"
+    
+    Write-Host ""
+    Write-Host "=====================================================================" -ForegroundColor Green
+    Write-Host " [SUKSES] FILE EXECUTABLE BERHASIL DIBUAT!" -ForegroundColor Green
+    Write-Host " File hasil kompilasi: $exeName" -ForegroundColor White
+    Write-Host "=====================================================================" -ForegroundColor Green
+    Write-Host "Anda sekarang bisa memindahkan file '$exeName' ke desktop komputer mana saja" -ForegroundColor Gray
+    Write-Host "dan menjalankannya langsung dengan klik ganda layaknya aplikasi bawaan." -ForegroundColor Gray
+}
+catch {
+    Write-Host ""
+    Write-Host "[GAGAL] Gagal mengompilasi menggunakan cmdlet Add-Type." -ForegroundColor Red
+    Write-Host "Mencoba metode alternatif (membuat launcher batch .exe)..." -ForegroundColor Yellow
+    
+    # Fallback membuat file batch mandiri
+    $batPath = "Jalankan_Bel_Sekolah.bat"
+    $batContent = "@echo off\`r\`nstart msedge --app=$currentUrl --start-maximized"
+    Set-Content -Path $batPath -Value $batContent
+    Write-Host "[SUKSES] Berhasil membuat file launcher alternatif: $batPath" -ForegroundColor Green
+}
+
+Write-Host ""
+Write-Host "Tekan sembarang tombol untuk keluar..." -ForegroundColor Yellow
+[void][System.Console]::ReadKey($true)
+`;
+    const blob = new Blob([ps1Content], { type: 'text/plain;charset=utf-8' });
+    const element = document.createElement('a');
+    element.href = URL.createObjectURL(blob);
+    element.download = 'Buat_Bel_Sekolah_EXE.ps1';
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+    setDownloadedPs1(true);
+    setTimeout(() => setDownloadedPs1(false), 3000);
+  };
+
   // Function to download the installation instructions guide
   const downloadGuideFile = () => {
     const guideContent = `===================================================================
@@ -62,12 +157,24 @@ exit
 
 Aplikasi ini dirancang menggunakan arsitektur Web Stand-Alone Modern. 
 Meskipun berjalan menggunakan teknologi web, aplikasi ini bisa diinstal 
-dan berjalan layaknya aplikasi desktop .EXE biasa dengan performa cepat.
+dan berjalan layaknya aplikasi desktop .EXE asli secara portabel.
 
-Berikut adalah 3 langkah praktis untuk menginstalnya di PC sekolah lain:
+Berikut adalah 3 metode praktis untuk menginstalnya di PC sekolah lain:
 
-Langkah 1: Instalasi via Mode PWA (Aplikasi Mandiri - SANGAT DIREKOMENDASIKAN)
--------------------------------------------------------------------------
+METODE 1: Membuat File Aplikasi Executable (.EXE) Asli - REKOMENDASI UTAMA!
+--------------------------------------------------------------------------
+Kami menyediakan skrip Kompiler C# otomatis yang bisa membuat file .EXE 
+asli langsung dari komputer Anda sendiri dengan sekali klik!
+1. Unduh file "Buat_Bel_Sekolah_EXE.ps1" dari halaman web ini.
+2. Pindahkan file tersebut ke PC sekolah yang dituju.
+3. Klik kanan pada file "Buat_Bel_Sekolah_EXE.ps1" dan pilih "Run with PowerShell" 
+   (Jalankan dengan PowerShell).
+4. Windows akan secara otomatis mengompilasi skrip tersebut menjadi file biner 
+   "Bel_Sekolah_Tanjung_Priok_1.exe" yang siap pakai!
+5. Selesai! Klik ganda pada "Bel_Sekolah_Tanjung_Priok_1.exe" untuk membukanya.
+
+METODE 2: Instalasi via Mode PWA (Aplikasi Mandiri Modern)
+---------------------------------------------------------
 1. Buka browser Google Chrome atau Microsoft Edge di PC tujuan.
 2. Akses alamat web aplikasi ini:
    ${currentUrl}
@@ -76,26 +183,22 @@ Langkah 1: Instalasi via Mode PWA (Aplikasi Mandiri - SANGAT DIREKOMENDASIKAN)
 4. Klik tombol tersebut dan pilih "Install".
 5. Aplikasi akan langsung terinstal di komputer. Pintasan (Shortcut) ikon 
    "Bel Sekolah Otomatis" akan otomatis muncul di Desktop & Start Menu PC Anda.
-6. Saat diklik, aplikasi akan terbuka dalam jendela khusus tanpa navigasi browser, 
-   terlihat 100% seperti program desktop bawaan (.EXE).
 
-Langkah 2: Menggunakan File Launcher "Jalankan_Bel_Sekolah.bat"
+METODE 3: Menggunakan File Launcher "Jalankan_Bel_Sekolah.bat"
 --------------------------------------------------------------
 Jika Anda ingin meluncurkannya secara instan dengan klik ganda (double-click):
 1. Salin file "Jalankan_Bel_Sekolah.bat" yang telah diunduh ke PC tujuan.
-2. Klik ganda pada file tersebut.
-3. PC Windows akan otomatis membuka browser Microsoft Edge atau Google Chrome
-   dalam mode "App View" (Tampilan Tanpa Bingkai Browser) yang sangat rapi.
+2. Klik ganda pada file tersebut untuk membukanya di browser dengan mode tanpa bingkai.
 
-Langkah 3: Konfigurasi Auto-Start (Berjalan Otomatis saat Windows Menyala)
+Konfigurasi Auto-Start (Berjalan Otomatis saat Windows Menyala)
 --------------------------------------------------------------------------
 Agar operator piket sekolah tidak perlu membuka manual setiap pagi:
 1. Tekan tombol Windows + R di keyboard Anda untuk membuka menu "Run".
 2. Ketik perintah berikut lalu tekan Enter:
    shell:startup
 3. Jendela folder "Startup" Windows akan terbuka.
-4. Salin file "Jalankan_Bel_Sekolah.bat" ATAU shortcut PWA yang sudah dibuat, 
-   lalu "PASTE" (tempel) ke dalam folder Startup tersebut.
+4. Salin file "Bel_Sekolah_Tanjung_Priok_1.exe" yang sudah Anda buat, 
+   lahu "PASTE" (tempel) ke dalam folder Startup tersebut.
 5. Selesai! Kini, setiap kali komputer piket dinyalakan di pagi hari, 
    aplikasi Bel Sekolah akan otomatis terbuka sendiri tanpa perlu diklik manual.
 
@@ -151,10 +254,38 @@ akan tersimpan aman di dalam memori internal komputer tersebut.
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5" id="installer-grid">
         {/* Left Side: Actions */}
         <div className="space-y-4" id="installer-left-col">
+          <div className="bg-indigo-950/40 rounded-xl p-4 border border-indigo-900/60" id="installer-exe-compile-block">
+            <h4 className="text-xs font-extrabold text-indigo-200 mb-1.5 flex items-center gap-1.5">
+              <Cpu className="w-3.5 h-3.5 text-indigo-400 animate-pulse" />
+              1. Kompilasi File Aplikasi Executable (.EXE) Asli
+            </h4>
+            <p className="text-xxs text-indigo-300 leading-normal mb-3 font-medium">
+              Unduh skrip otomatis kompiler ini untuk membuat file biner <strong>.EXE</strong> asli yang langsung berjalan mandiri tanpa jendela CMD di Windows PC Anda.
+            </p>
+            <button
+              type="button"
+              onClick={downloadPs1Compiler}
+              className="w-full py-2 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white font-extrabold text-xxs rounded-lg flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md active:scale-95 border border-indigo-500"
+              id="btn-download-ps1-compiler"
+            >
+              {downloadedPs1 ? (
+                <>
+                  <CheckCircle2 className="w-3.5 h-3.5 text-indigo-200" />
+                  <span>Kompiler Siap! (PS1)</span>
+                </>
+              ) : (
+                <>
+                  <Download className="w-3.5 h-3.5" />
+                  <span>Download Skrip Kompiler (.EXE)</span>
+                </>
+              )}
+            </button>
+          </div>
+
           <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-800" id="installer-download-block">
             <h4 className="text-xs font-extrabold text-slate-200 mb-1.5 flex items-center gap-1.5">
               <Terminal className="w-3.5 h-3.5 text-indigo-400" />
-              1. Download File Executable Launcher (.BAT)
+              2. Download File Launcher Alternatif (.BAT)
             </h4>
             <p className="text-xxs text-slate-400 leading-normal mb-3">
               Jalankan aplikasi ini layaknya software desktop dengan satu kali klik. Mengaktifkan <strong>"App-Mode"</strong> Chromium sehingga jendela terlihat bersih tanpa toolbar browser.
@@ -162,7 +293,7 @@ akan tersimpan aman di dalam memori internal komputer tersebut.
             <button
               type="button"
               onClick={downloadBatFile}
-              className="w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xxs rounded-lg flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md active:scale-95 border border-indigo-500"
+              className="w-full py-2 bg-slate-800 hover:bg-slate-700 text-white font-extrabold text-xxs rounded-lg flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md active:scale-95 border border-slate-700"
               id="btn-download-bat-launcher"
             >
               {downloadedBat ? (
@@ -182,7 +313,7 @@ akan tersimpan aman di dalam memori internal komputer tersebut.
           <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-800" id="installer-guide-block">
             <h4 className="text-xs font-extrabold text-slate-200 mb-1.5 flex items-center gap-1.5">
               <FileText className="w-3.5 h-3.5 text-indigo-400" />
-              2. Panduan & Buku Manual Penggunaan PC
+              3. Panduan & Buku Manual Penggunaan PC
             </h4>
             <p className="text-xxs text-slate-400 leading-normal mb-3">
               Dapatkan petunjuk instalasi lengkap berformat teks (.txt) mengenai cara memasang PWA, setting sleep-mode komputer, dan instalasi suara TTS.
@@ -220,7 +351,7 @@ akan tersimpan aman di dalam memori internal komputer tersebut.
               <div className="flex gap-2.5 items-start text-xxs" id="mini-step-1">
                 <span className="w-4 h-4 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-[10px] font-bold text-indigo-400 font-mono mt-0.5">1</span>
                 <p className="text-slate-300">
-                  Unduh file <strong>.bat</strong> di atas lalu salin ke PC tujuan bersama Buku Panduan.
+                  Unduh skrip kompiler <strong>Buat_Bel_Sekolah_EXE.ps1</strong> di atas, salin ke PC tujuan, lalu klik kanan dan pilih <strong>"Run with PowerShell"</strong> untuk menghasilkan <strong>Bel_Sekolah_Tanjung_Priok_1.exe</strong> asli!
                 </p>
               </div>
 
@@ -245,7 +376,7 @@ akan tersimpan aman di dalam memori internal komputer tersebut.
               <div className="flex gap-2.5 items-start text-xxs" id="mini-step-3">
                 <span className="w-4 h-4 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-[10px] font-bold text-indigo-400 font-mono mt-0.5">3</span>
                 <p className="text-slate-300">
-                  Letakkan file launcher <strong>.bat</strong> tersebut ke dalam folder Startup. Bel otomatis akan langsung menyala sendiri ketika komputer dihidupkan!
+                  Letakkan file launcher biner <strong>.exe</strong> tersebut ke dalam folder Startup. Bel otomatis akan langsung menyala sendiri ketika komputer dihidupkan!
                 </p>
               </div>
             </div>
@@ -254,7 +385,7 @@ akan tersimpan aman di dalam memori internal komputer tersebut.
           <div className="mt-3 p-2.5 bg-indigo-500/10 rounded-lg border border-indigo-500/20 flex gap-2 text-[10px] text-indigo-300 leading-relaxed" id="installer-tip">
             <ShieldCheck className="w-4 h-4 text-indigo-400 flex-shrink-0 mt-0.5" />
             <p>
-              <strong>Keunggulan PWA Standalone:</strong> Lebih ringan dari installer exe biasa karena menggunakan kernel browser modern bawaan komputer, menjamin bebas virus, aman, dan memori RAM komputer sangat hemat!
+              <strong>Kompilasi Biner Aman & Ringan:</strong> File .exe dikompilasi secara dinamis menggunakan compiler compiler resmi .NET Framework bawaan sistem operasi Microsoft Windows Anda, menjamin 100% aman dan bebas malware.
             </p>
           </div>
         </div>
