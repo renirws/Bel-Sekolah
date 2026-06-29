@@ -161,6 +161,27 @@ export default function App() {
     localStorage.setItem('school_bell_sequence', bellSequence);
   }, [bellSequence]);
 
+  // Master Volume State
+  const [masterVolume, setMasterVolumeState] = useState<number>(() => {
+    return audioSystem.getMasterVolume();
+  });
+
+  const [preMuteVolume, setPreMuteVolume] = useState<number>(1.0);
+
+  const handleVolumeChange = (newVol: number) => {
+    audioSystem.setMasterVolume(newVol);
+    setMasterVolumeState(newVol);
+  };
+
+  const toggleMute = () => {
+    if (masterVolume > 0) {
+      setPreMuteVolume(masterVolume);
+      handleVolumeChange(0);
+    } else {
+      handleVolumeChange(preMuteVolume > 0 ? preMuteVolume : 0.8);
+    }
+  };
+
   // Trigger Logs
   const [logs, setLogs] = useState<BellLog[]>(() => {
     const saved = localStorage.getItem('school_bell_logs');
@@ -461,6 +482,45 @@ export default function App() {
           <Logo />
           
           <div className="flex items-center gap-3.5" id="header-right-side">
+            {/* Master Volume Slider Control */}
+            <div className="flex items-center gap-2.5 bg-slate-50 hover:bg-slate-100/80 px-3 py-1.5 rounded-xl border border-slate-200/60 transition-all" id="header-volume-control">
+              <button
+                type="button"
+                onClick={toggleMute}
+                className="text-slate-500 hover:text-indigo-600 transition-colors p-1 rounded-lg hover:bg-slate-200/50 cursor-pointer flex items-center justify-center active:scale-95"
+                title={masterVolume === 0 ? "Buka Suara" : "Senyap"}
+                id="btn-volume-toggle"
+              >
+                {masterVolume === 0 ? (
+                  <VolumeX className="w-4 h-4 text-rose-500 animate-pulse" />
+                ) : (
+                  <Volume2 className="w-4 h-4 text-indigo-600" />
+                )}
+              </button>
+              
+              <div className="flex flex-col items-start gap-0.5" id="volume-slider-container">
+                <div className="flex items-center justify-between w-full gap-2" id="volume-label-row">
+                  <span className="text-[8px] font-bold text-slate-400 uppercase tracking-wider select-none">Volume</span>
+                  <span className="text-[10px] font-extrabold text-indigo-600 font-mono select-none">
+                    {Math.round(masterVolume * 100)}%
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.01"
+                  value={masterVolume}
+                  onChange={(e) => handleVolumeChange(parseFloat(e.target.value))}
+                  className="w-20 sm:w-28 h-1 rounded-lg bg-slate-200 accent-indigo-600 cursor-pointer appearance-none outline-none"
+                  id="input-master-volume-slider"
+                  style={{
+                    background: `linear-gradient(to right, #4f46e5 0%, #4f46e5 ${masterVolume * 100}%, #e2e8f0 ${masterVolume * 100}%, #e2e8f0 100%)`
+                  }}
+                />
+              </div>
+            </div>
+
             <div className="text-right hidden md:block" id="user-metadata-group">
               <span className="text-[10px] text-slate-400 font-mono tracking-wider uppercase">User / Operator</span>
               <p className="text-xs font-semibold text-slate-700">{localStorage.getItem('saved_operator') || 'Staff Kurikulum Piket'}</p>

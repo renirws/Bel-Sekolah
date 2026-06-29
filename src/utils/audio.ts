@@ -7,6 +7,32 @@ class SchoolAudioSystem {
   private ctx: AudioContext | null = null;
   private currentSpeech: SpeechSynthesisUtterance | null = null;
   private currentAudioElement: HTMLAudioElement | null = null;
+  private masterVolume: number = 1.0;
+
+  constructor() {
+    try {
+      const savedVolume = localStorage.getItem('school_bell_master_volume');
+      if (savedVolume !== null) {
+        this.masterVolume = parseFloat(savedVolume);
+      }
+    } catch (e) {
+      this.masterVolume = 1.0;
+    }
+  }
+
+  public setMasterVolume(val: number) {
+    this.masterVolume = Math.max(0, Math.min(1, val));
+    try {
+      localStorage.setItem('school_bell_master_volume', this.masterVolume.toString());
+    } catch (e) {}
+    if (this.currentAudioElement) {
+      this.currentAudioElement.volume = this.masterVolume;
+    }
+  }
+
+  public getMasterVolume(): number {
+    return this.masterVolume;
+  }
 
   private getContext(): AudioContext {
     if (!this.ctx) {
@@ -34,7 +60,7 @@ class SchoolAudioSystem {
     }
 
     gainNode.gain.setValueAtTime(0, startTime);
-    gainNode.gain.linearRampToValueAtTime(volumeValue, startTime + 0.05);
+    gainNode.gain.linearRampToValueAtTime(volumeValue * this.masterVolume, startTime + 0.05);
     gainNode.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
 
     osc.connect(gainNode);
@@ -137,7 +163,7 @@ class SchoolAudioSystem {
       }
 
       gainNode.gain.setValueAtTime(0, now);
-      gainNode.gain.linearRampToValueAtTime(0.3, now + 0.1);
+      gainNode.gain.linearRampToValueAtTime(0.3 * this.masterVolume, now + 0.1);
       gainNode.gain.exponentialRampToValueAtTime(0.001, now + durationSeconds);
 
       osc.connect(gainNode);
@@ -194,6 +220,7 @@ class SchoolAudioSystem {
 
       utterance.pitch = pitch;
       utterance.rate = rate; // Slightly slower, highly formal clear articulation
+      utterance.volume = this.masterVolume;
 
       utterance.onend = () => {
         this.currentSpeech = null;
@@ -311,7 +338,7 @@ class SchoolAudioSystem {
             osc.frequency.setValueAtTime(120, now);
             osc.frequency.exponentialRampToValueAtTime(45, now + 0.12);
             
-            gainNode.gain.setValueAtTime(0.25, now);
+            gainNode.gain.setValueAtTime(0.25 * this.masterVolume, now);
             gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
             
             osc.connect(gainNode);
@@ -332,7 +359,7 @@ class SchoolAudioSystem {
             osc.frequency.setValueAtTime(320, now);
             osc.frequency.linearRampToValueAtTime(90, now + 0.08);
             
-            gainNode.gain.setValueAtTime(0.1, now);
+            gainNode.gain.setValueAtTime(0.1 * this.masterVolume, now);
             gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
             
             osc.connect(gainNode);
@@ -352,7 +379,7 @@ class SchoolAudioSystem {
             osc.type = 'triangle';
             osc.frequency.setValueAtTime(rootFreq, now);
             
-            gainNode.gain.setValueAtTime(0.15, now);
+            gainNode.gain.setValueAtTime(0.15 * this.masterVolume, now);
             gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
             
             osc.connect(gainNode);
@@ -376,7 +403,7 @@ class SchoolAudioSystem {
             osc.frequency.setValueAtTime(melodyNoteFreq, now);
             
             gainNode.gain.setValueAtTime(0, now);
-            gainNode.gain.linearRampToValueAtTime(0.15, now + 0.02);
+            gainNode.gain.linearRampToValueAtTime(0.15 * this.masterVolume, now + 0.02);
             gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
             
             osc.connect(gainNode);
@@ -432,6 +459,7 @@ class SchoolAudioSystem {
       this.isMusicPlaying = true;
       const audio = new Audio(url);
       audio.crossOrigin = "anonymous";
+      audio.volume = this.masterVolume;
       this.currentAudioElement = audio;
       
       let countdownInterval: any = null;
